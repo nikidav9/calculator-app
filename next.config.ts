@@ -1,7 +1,7 @@
-import nextConfig from 'next/dist/server/next-config';
+import type { NextConfig } from 'next';
 
-const config = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
 };
 
-export default config;
+export default nextConfig;
