@@ -1,101 +1,97 @@
-'use client';
-
-import { useState } from 'react';
+'use client'
+import { useState } from 'react'
 
 export default function Home() {
-  const [display, setDisplay] = useState('0');
-  const [currentValue, setCurrentValue] = useState('');
-  const [operator, setOperator] = useState('');
-  const [previousValue, setPreviousValue] = useState('');
+  const [display, setDisplay] = useState('0')
+  const [currentValue, setCurrentValue] = useState('')
+  const [operator, setOperator] = useState<string | null>(null)
+  const [prevValue, setPrevValue] = useState('')
 
-  const handleNumberClick = (num: string) => {
-    if (display === '0' && num !== '.') {
-      setDisplay(num);
-      setCurrentValue(num);
-    } else if (num === '.' && currentValue.includes('.')) {
-      return; // Предотвращаем ввод нескольких десятичных точек
+  const handleDigitClick = (digit: string) => {
+    if (display === '0' && digit === '0') return
+    if (display === '0' || (operator && currentValue === '')) {
+      setDisplay(digit)
+      setCurrentValue(digit)
     } else {
-      setDisplay((prev) => prev + num);
-      setCurrentValue((prev) => prev + num);
+      setDisplay(prev => prev + digit)
+      setCurrentValue(prev => prev + digit)
     }
-  };
+  }
 
   const handleOperatorClick = (op: string) => {
-    if (currentValue === '') return; // Не применять оператор без числа
-    if (previousValue !== '' && operator !== '') {
-      handleCalculate(); // Выполнить предыдущую операцию, если уже есть
+    if (currentValue === '') return
+    if (prevValue !== '' && operator) {
+      calculate()
     }
-    setOperator(op);
-    setPreviousValue(currentValue);
-    setCurrentValue('');
-    setDisplay((prev) => prev + ' ' + op + ' ');
-  };
+    setOperator(op)
+    setPrevValue(currentValue)
+    setCurrentValue('')
+  }
 
-  const handleCalculate = () => {
-    if (previousValue === '' || currentValue === '' || operator === '') return;
+  const handleClear = () => {
+    setDisplay('0')
+    setCurrentValue('')
+    setOperator(null)
+    setPrevValue('')
+  }
 
-    let result: number;
-    const prev = parseFloat(previousValue);
-    const current = parseFloat(currentValue);
+  const calculate = () => {
+    let result: number
+    const prev = parseFloat(prevValue)
+    const current = parseFloat(currentValue)
 
     switch (operator) {
       case '+':
-        result = prev + current;
-        break;
+        result = prev + current
+        break
       case '-':
-        result = prev - current;
-        break;
+        result = prev - current
+        break
       case '*':
-        result = prev * current;
-        break;
+        result = prev * current
+        break
       case '/':
-        result = prev / current;
-        break;
+        result = prev / current
+        break
       default:
-        return;
+        return
     }
-    const resultString = result.toString();
-    setDisplay(resultString);
-    setCurrentValue(resultString);
-    setPreviousValue('');
-    setOperator('');
-  };
-
-  const handleClear = () => {
-    setDisplay('0');
-    setCurrentValue('');
-    setOperator('');
-    setPreviousValue('');
-  };
+    setDisplay(result.toString())
+    setCurrentValue(result.toString())
+    setPrevValue('')
+    setOperator(null)
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="text-right text-3xl font-bold mb-4 p-2 border rounded bg-gray-50">{display}</div>
-        <div className="grid grid-cols-4 gap-2">
-          <button onClick={() => handleNumberClick('7')} className="p-4 bg-gray-200 rounded-lg text-xl">7</button>
-          <button onClick={() => handleNumberClick('8')} className="p-4 bg-gray-200 rounded-lg text-xl">8</button>
-          <button onClick={() => handleNumberClick('9')} className="p-4 bg-gray-200 rounded-lg text-xl">9</button>
-          <button onClick={() => handleOperatorClick('/')} className="p-4 bg-orange-400 text-white rounded-lg text-xl">/</button>
+    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="bg-gray-800 p-6 rounded-xl shadow-lg w-80">
+        <div className="bg-gray-700 text-white text-right p-4 mb-4 rounded-lg text-4xl font-light overflow-hidden whitespace-nowrap">
+          {display}
+        </div>
+        <div className="grid grid-cols-4 gap-3">
+          <button className="col-span-2 p-4 text-white text-xl rounded-lg bg-orange-600 hover:bg-orange-700 active:bg-orange-800 transition-colors duration-200" onClick={handleClear}>C</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleOperatorClick('/')}>/</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleOperatorClick('*')}>*</button>
 
-          <button onClick={() => handleNumberClick('4')} className="p-4 bg-gray-200 rounded-lg text-xl">4</button>
-          <button onClick={() => handleNumberClick('5')} className="p-4 bg-gray-200 rounded-lg text-xl">5</button>
-          <button onClick={() => handleNumberClick('6')} className="p-4 bg-gray-200 rounded-lg text-xl">6</button>
-          <button onClick={() => handleOperatorClick('*')} className="p-4 bg-orange-400 text-white rounded-lg text-xl">*</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('7')}>7</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('8')}>8</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('9')}>9</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleOperatorClick('-')}>-</button>
 
-          <button onClick={() => handleNumberClick('1')} className="p-4 bg-gray-200 rounded-lg text-xl">1</button>
-          <button onClick={() => handleNumberClick('2')} className="p-4 bg-gray-200 rounded-lg text-xl">2</button>
-          <button onClick={() => handleNumberClick('3')} className="p-4 bg-gray-200 rounded-lg text-xl">3</button>
-          <button onClick={() => handleOperatorClick('-')} className="p-4 bg-orange-400 text-white rounded-lg text-xl">-</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('4')}>4</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('5')}>5</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('6')}>6</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleOperatorClick('+')}>+</button>
 
-          <button onClick={() => handleNumberClick('0')} className="p-4 bg-gray-200 rounded-lg text-xl col-span-2">0</button>
-          <button onClick={() => handleNumberClick('.')} className="p-4 bg-gray-200 rounded-lg text-xl">.</button>
-          <button onClick={() => handleOperatorClick('+')} className="p-4 bg-orange-400 text-white rounded-lg text-xl">+</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('1')}>1</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('2')}>2</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('3')}>3</button>
+          <button className="col-span-1 p-4 text-white text-xl rounded-lg bg-orange-500 hover:bg-orange-600 active:bg-orange-700 transition-colors duration-200 row-span-2 flex items-center justify-center" onClick={calculate}>=</button>
 
-          <button onClick={handleClear} className="p-4 bg-red-500 text-white rounded-lg text-xl col-span-3">C</button>
-          <button onClick={handleCalculate} className="p-4 bg-green-500 text-white rounded-lg text-xl">=</button>
+          <button className="col-span-2 p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('0')}>0</button>
+          <button className="p-4 text-white text-xl rounded-lg bg-gray-600 hover:bg-gray-500 active:bg-gray-700 transition-colors duration-200" onClick={() => handleDigitClick('.')}>.</button>
         </div>
       </div>
     </div>
-  );
+  )
 }
