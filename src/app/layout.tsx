@@ -1,9 +1,12 @@
-import type { Metadata } from 'next'
 import './globals.css'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Калькулятор',
-  description: 'Простой калькулятор на Next.js',
+  description: 'Простой калькулятор UI/UX дизайн',
 }
 
 export default function RootLayout({
@@ -13,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
